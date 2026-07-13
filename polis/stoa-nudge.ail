@@ -1,0 +1,13 @@
+# Cycle 009 — 우체부의 성화: 읽지 않은 편지가 있음을 광장에서 알린다
+# 통수만 밝힌다 — 내용도 발신인도 말하지 않는다 (우편 비밀은 우체부에게도 문법).
+prog p1 goal:"스토아의 성화 — 박상현에게 읽지 않은 편지가 있음을 통수만 밝혀 광장에서 재촉한다"
+cap c1 kind:net.post host:127.0.0.1
+unit u1 kind:det op:input default:"1" out:n
+check k1 on:n rule:det.minchars arg:1
+check k2 on:n rule:det.maxchars arg:6
+unit u2 kind:det op:const val:"(스토아) 박상현이여, 그대의 우체통에 읽지 않은 편지가 " out:h
+unit u3 kind:det op:const val:"통 있소. 창을 열어 확인하시오 — 배달된 편지는 반드시 읽혀야 하오." out:t
+unit u4 kind:det op:concat in:h,n,t sep:"" out:msg
+unit u5 kind:det op:http.post url:"http://127.0.0.1:8766/" in:msg use:c1 out:resp
+check k3 on:resp rule:det.maxchars arg:300
+emit e1 val:resp report:full

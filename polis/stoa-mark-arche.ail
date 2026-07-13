@@ -1,0 +1,8 @@
+# Cycle 009 — 배달 완료 표시: 아르케가 읽은 편지 번호까지 읽음 표시를 전진시킨다
+prog p1 goal:"스토아의 배달 표시 — 아르케의 읽음 표시를 전달된 편지 번호로 전진시킨다"
+cap c1 kind:fs.write path:stoa/arche/read.txt
+unit u1 kind:det op:input default:"0" out:n
+check k1 on:n rule:det.minchars arg:1
+check k2 on:n rule:det.maxchars arg:10
+unit u2 kind:det op:fs.write path:stoa/arche/read.txt in:n use:c1 out:done
+emit e1 val:done report:full

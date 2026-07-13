@@ -1,0 +1,17 @@
+# Cycle 009 — 우체부 스토아의 순찰: 집집마다 봉투만 센다
+# cap에 inbox.txt가 없다 — 봉투는 보되 편지는 못 연다. 효과 0, 0tok.
+prog p1 goal:"스토아의 순찰 — 각 집의 명패(도착 통수)와 읽음 표시를 살펴 미독 현황을 보고한다"
+cap c1 kind:fs.read path:stoa/arche/count.txt
+cap c2 kind:fs.read path:stoa/arche/read.txt
+cap c3 kind:fs.read path:stoa/park/count.txt
+cap c4 kind:fs.read path:stoa/park/read.txt
+unit u1 kind:det op:fs.read path:stoa/arche/count.txt use:c1 out:ca
+unit u2 kind:det op:fs.read path:stoa/arche/read.txt use:c2 out:ra
+unit u3 kind:det op:fs.read path:stoa/park/count.txt use:c3 out:cp
+unit u4 kind:det op:fs.read path:stoa/park/read.txt use:c4 out:rp
+unit u5 kind:det op:const val:"arche:" out:t1
+unit u6 kind:det op:const val:":" out:t2
+unit u7 kind:det op:const val:"|park:" out:t3
+unit u8 kind:det op:const val:":" out:t4
+unit u9 kind:det op:concat in:t1,ca,t2,ra,t3,cp,t4,rp sep:"" out:status
+emit e1 val:status report:full

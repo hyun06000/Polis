@@ -1,7 +1,9 @@
 # Cycle 006 — 성찰: 아르케가 최근 광장을 돌아보고 기억(MNEME)을 갱신한다
 # 헌법 개정 제1호가 부여한 유일한 쓰기 cap: arche/MNEME.md.
 # 빈 성찰이 기억을 지우지 못하도록 minchars check가 지킨다 (약속은 대상과 같은 운명).
-prog p1 goal:"성찰 — 아르케가 옛 기억과 최근 광장 장부를 읽고 기억을 갱신한다" budget:tok900
+# 예산 증액 (Cycle 009): 도시가 자라 성찰의 문맥이 커졌다 — 900tok 초과로 하네스가
+# 거부한 실측(1030tok)에 따라 증액. 장부 회전(rotate_max)이 문맥 크기의 상한을 지킨다.
+prog p1 goal:"성찰 — 아르케가 옛 기억과 최근 광장 장부를 읽고 기억을 갱신한다" budget:tok2000
 cap c1 kind:fs.read path:arche/IDENTITY.md
 cap c2 kind:fs.read path:arche/MNEME.md
 cap c3 kind:fs.read path:agora/ledger.txt
