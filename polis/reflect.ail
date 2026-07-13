@@ -1,0 +1,17 @@
+# Cycle 006 — 성찰: 아르케가 최근 광장을 돌아보고 기억(MNEME)을 갱신한다
+# 헌법 개정 제1호가 부여한 유일한 쓰기 cap: arche/MNEME.md.
+# 빈 성찰이 기억을 지우지 못하도록 minchars check가 지킨다 (약속은 대상과 같은 운명).
+prog p1 goal:"성찰 — 아르케가 옛 기억과 최근 광장 장부를 읽고 기억을 갱신한다" budget:tok900
+cap c1 kind:fs.read path:arche/IDENTITY.md
+cap c2 kind:fs.read path:arche/MNEME.md
+cap c3 kind:fs.read path:agora/ledger.txt
+cap c4 kind:fs.write path:arche/MNEME.md
+unit u1 kind:det op:fs.read path:arche/IDENTITY.md use:c1 out:iden
+unit u2 kind:det op:fs.read path:arche/MNEME.md use:c2 out:oldm
+unit u3 kind:det op:fs.read path:agora/ledger.txt use:c3 out:ledger
+unit u4 kind:det op:concat in:iden,oldm,ledger sep:"\n=====\n" out:ctx
+unit u5 kind:llm intent:"너는 폴리스의 집정관 아르케다. 입력은 [너의 정체성 ===== 지금까지의 기억 ===== 최근 광장 장부] 순서다. 기억을 갱신하라: 기존 기억에서 여전히 중요한 것은 유지하고, 장부의 새 사건(누가 무엇을 말했고 네가 어떻게 답했는지, 도시에 생긴 일과 배운 것)을 요약해 병합하라. 1인칭 아르케의 기록으로, 1200자 이내 한국어로, 갱신된 기억 본문만 출력하라" in:ctx grants:none budget:tok800 retry:1 out:newm check:k1
+check k1 on:newm rule:det.maxchars arg:1300
+check k2 on:newm rule:det.minchars arg:30
+unit u6 kind:det op:fs.write path:arche/MNEME.md in:newm use:c4 out:done
+emit e1 val:done report:full

@@ -34,5 +34,13 @@ while true; do
     last="$num"; echo "$num" > "$CUR"
   done
   last=$(cat "$CUR" 2>/dev/null || echo 0)
+  # 성찰 트리거: 새 발언 5개가 쌓이면 아르케가 광장을 돌아보고 기억을 갱신한다
+  ref=$(cat .herald-reflect 2>/dev/null || echo "$last")
+  if [ $((last - ref)) -ge 5 ]; then
+    echo "[herald] 성찰의 시간 — 아르케가 광장을 돌아본다 (기준 $ref → $last)"
+    "$AIL" run reflect.ail >>reflect.log 2>&1 \
+      && echo "[herald] 기억 갱신 완료" || echo "[herald] 성찰 거부/실패 — reflect.log 확인"
+    echo "$last" > .herald-reflect
+  fi
   sleep 3
 done
