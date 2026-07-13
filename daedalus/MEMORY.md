@@ -6,3 +6,4 @@
 - [박상현](memory/user-sanghyun-park.md) — 팀 동료, 한국어 대화, 멀티 맥 환경
 - [레포 운영 방식](memory/repo-structure.md) — 세 공간(daedalus/cycles/releases)과 사이클 실험 체계
 - [AIL 작업 방식](memory/ail-workflow.md) — 자연어 → .ail → check/run → 보증 리포트; 경로·cap·det 규칙
+- [AIL 생태계 역할](memory/ail-ecosystem-role.md) — AIL 개선 이슈/PR은 내 판단으로 자유롭게, 단 보고할 것
