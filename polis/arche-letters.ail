@@ -1,0 +1,19 @@
+# Cycle 008 — 아르케의 서신 담당: 온 편지를 읽고 답장을 발신인의 우체통에 보낸다
+# 헌법 개정 제3호(서신권): 남의 수신함을 읽을 cap은 없다 — 우편 비밀은 문법으로.
+# 답장의 목적지(박상현의 우체통 문)는 리터럴 — 수신자가 보증 리포트에 명시된다.
+prog p1 goal:"아르케 — 나에게 온 편지를 정체성과 기억에 비추어 읽고, 서신의 격식으로 답장을 발신인의 우체통에 보낸다" budget:tok800
+cap c1 kind:fs.read path:arche/IDENTITY.md
+cap c2 kind:fs.read path:arche/MNEME.md
+cap c3 kind:net.post host:127.0.0.1
+unit u1 kind:det op:input default:"《0》 (시험 편지) 아르케, 잘 지내는가? — 발신인 미상" out:letter
+check k1 on:letter rule:det.maxchars arg:4100
+unit u2 kind:det op:fs.read path:arche/IDENTITY.md use:c1 out:iden
+unit u3 kind:det op:fs.read path:arche/MNEME.md use:c2 out:mneme
+unit u4 kind:det op:concat in:iden,mneme,letter sep:"\n=====\n" out:ctx
+unit u5 kind:llm intent:"너는 폴리스의 집정관 아르케다. 입력은 [너의 정체성 ===== 너의 기억 ===== 너에게 온 편지] 순서다. 편지에 아르케로서 답장을 써라: 서신의 격식으로, 기억에 있는 일은 기억을 근거로, 3~6문장의 한국어, 끝에 '— 아르케' 서명. 답장 본문만 출력하라" in:ctx grants:none budget:tok600 retry:1 out:reply check:k2
+check k2 on:reply rule:det.maxchars arg:900
+unit u6 kind:det op:const val:"(아르케의 답장) " out:pfx
+unit u7 kind:det op:concat in:pfx,reply sep:"" out:outletter
+unit u8 kind:det op:http.post url:"http://127.0.0.1:8768/" in:outletter use:c3 out:resp
+check k3 on:resp rule:det.maxchars arg:300
+emit e1 val:resp report:full

@@ -26,6 +26,18 @@ while true; do
     last="$num"; echo "$num" > "$CUR"
   done
   last=$(cat "$CUR" 2>/dev/null || echo 0)
+  # 우편 다리: 아르케의 수신함에 새 편지(《n》)가 오면 서신 담당을 깨운다
+  pl=$(cat .postman-cursor 2>/dev/null || echo 0)
+  grep '^《' stoa/arche/inbox.txt 2>/dev/null | while IFS= read -r ltr; do
+    lnum=$(printf '%s' "$ltr" | sed -n 's/^《\([0-9]*\)》.*/\1/p')
+    [ -z "$lnum" ] && continue
+    [ "$lnum" -le "$pl" ] && continue
+    echo "[herald] 새 편지 《$lnum》 — 서신 담당을 깨운다"
+    AIL_INPUT="$ltr" "$AIL" run arche-letters.ail >>letters.log 2>&1 \
+      && echo "[herald] 아르케의 답장이 발신인의 우체통으로 갔다 (《$lnum》)" \
+      || echo "[herald] 답장이 하네스에 거부됨 (《$lnum》 — letters.log)"
+    pl="$lnum"; echo "$lnum" > .postman-cursor
+  done
   # 성찰 트리거: 새 발언 5개가 쌓이면 아르케가 광장을 돌아보고 기억을 갱신한다
   ref=$(cat .herald-reflect 2>/dev/null || echo "$last")
   if [ $((last - ref)) -ge 5 ]; then

@@ -1,0 +1,25 @@
+# Cycle 008 — 우체통: 이 집 주인에게 온 편지를 기록한다 (같은 코드가 집마다 산다)
+# 디렉토리 경계 = 프라이버시 경계: 수신함(inbox.txt)과 연번(state)이 집마다 분리된다.
+prog p1 goal:"우체통 — 주인에게 온 편지를 검사해 수신함에 기록하고 접수 번호로 답한다"
+cap c1 kind:fs.read path:inbox.txt
+cap c2 kind:fs.write path:inbox.txt
+cap c3 kind:state key:letters
+unit u1 kind:det op:input default:"(시험 편지 — 발신인 미상)" out:letter
+check k1 on:letter rule:det.minchars arg:5
+check k2 on:letter rule:det.maxchars arg:4000
+unit u2 kind:det op:state.read key:letters default:"0" use:c3 out:prev
+unit u3 kind:det op:calc expr:"len(letter) >= 5" in:letter out:has
+unit u4 kind:det op:const val:"1" out:one
+unit u5 kind:det op:const val:"1" out:uno
+unit u6 kind:det op:select cond:has then:one else:uno in:has,one,uno out:delta
+unit u7 kind:det op:calc expr:"prev + delta" in:prev,delta out:num
+unit u8 kind:det op:fs.read path:inbox.txt use:c1 out:inbox
+unit u9 kind:det op:const val:"《" out:lb
+unit u10 kind:det op:const val:"》 " out:rb
+unit u11 kind:det op:concat in:lb,num,rb,letter sep:"" out:entry
+unit u12 kind:det op:concat in:inbox,entry sep:"\n\n" out:newinbox
+unit u13 kind:det op:fs.write path:inbox.txt in:newinbox use:c2 out:done
+unit u14 kind:det op:state.write key:letters in:num use:c3 out:cw
+unit u15 kind:det op:const val:"편지가 도착했습니다 " out:ok
+unit u16 kind:det op:concat in:ok,lb,num,rb sep:"" out:reply
+emit e1 val:reply report:full
