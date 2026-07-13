@@ -1,0 +1,59 @@
+# Cycle 004 — 검시관: 아고라의 사망을 진단해 유서를 남기고 다음 세대를 조정한다
+# 정황(ctx)은 파수꾼이 AIL_INPUT으로 주입하는 untrusted 입력 — check를 거쳐야 유서에 닿는다.
+# 저널·파라미터는 같은 디렉토리의 state이므로 선언한 cap으로 직접 열람한다.
+# 세대 증가(newgen)는 ctx에서 파생 — 정황 없이 세대만 올라가는 일은 없다 (003 교훈).
+prog p1 goal:"검시관 — 사망 정황과 블랙박스 저널로 사인을 진단하고 유서를 기록하며 다음 세대 파라미터를 조정한다"
+cap s1 kind:state key:agora_last_num
+cap s2 kind:state key:agora_last_len
+cap s3 kind:state key:agora_gen
+cap s4 kind:state key:agora_rotate_max
+cap f1 kind:fs.write path:agora/testament.txt
+cap f2 kind:fs.read path:agora/testaments.log
+cap f3 kind:fs.write path:agora/testaments.log
+unit u1 kind:det op:input default:"exit=? log=(정황 없음)" out:ctx
+check k1 on:ctx rule:det.minchars arg:1
+check k2 on:ctx rule:det.maxchars arg:600
+unit u2 kind:det op:state.read key:agora_last_num default:"0" use:s1 out:lastnum
+unit u3 kind:det op:state.read key:agora_last_len default:"0" use:s2 out:lastlen
+unit u4 kind:det op:state.read key:agora_gen default:"1" use:s3 out:gen
+unit u5 kind:det op:state.read key:agora_rotate_max default:"999999" use:s4 out:rmax
+unit u6 kind:det op:calc expr:"lastlen > 2000" in:lastlen out:bloat
+unit u7 kind:det op:const val:"장부 비대(ledger_bloat) — 장부가 건강 한도(2000자)를 넘긴 채 죽었다" out:cb
+unit u8 kind:det op:const val:"외부 요인(external) — 장부는 건강했다. 정황 기록을 보라" out:ce
+unit u9 kind:det op:select cond:bloat then:cb else:ce in:bloat,cb,ce out:cause
+unit u10 kind:det op:const val:"2000" out:tight
+unit u11 kind:det op:calc expr:"len(ctx) >= 1" in:ctx out:hasctx
+unit u12 kind:det op:const val:"2000" out:tight2
+unit u13 kind:det op:select cond:hasctx then:tight else:tight2 in:hasctx,tight,tight2 out:tightg
+unit u14 kind:det op:select cond:bloat then:tightg else:rmax in:bloat,tightg,rmax out:newrmax
+unit u15 kind:det op:const val:"1" out:one
+unit u16 kind:det op:const val:"1" out:uno
+unit u17 kind:det op:select cond:hasctx then:one else:uno in:hasctx,one,uno out:dgen
+unit u18 kind:det op:calc expr:"gen + dgen" in:gen,dgen out:newgen
+unit t1 kind:det op:const val:"== 유서 ==" out:h
+unit t2 kind:det op:const val:"떠나는 세대: " out:l1
+unit t3 kind:det op:concat in:l1,gen sep:"" out:a1
+unit t4 kind:det op:const val:"사인: " out:l2
+unit t5 kind:det op:concat in:l2,cause sep:"" out:a2
+unit t6 kind:det op:const val:"마지막 접수 번호: " out:l3
+unit t7 kind:det op:concat in:l3,lastnum sep:"" out:a3
+unit t8 kind:det op:const val:"죽을 때 장부 크기: " out:l4
+unit t9 kind:det op:concat in:l4,lastlen sep:"" out:a4
+unit t10 kind:det op:const val:"정황: " out:l5
+unit t11 kind:det op:concat in:l5,ctx sep:"" out:a5
+unit t12 kind:det op:const val:"다음 세대 지침: rotate_max=" out:l6
+unit t13 kind:det op:concat in:l6,newrmax sep:"" out:a6
+unit t14 kind:det op:const val:"다음 세대: " out:l7
+unit t15 kind:det op:concat in:l7,newgen sep:"" out:a7
+unit t16 kind:det op:concat in:h,a1,a2,a3,a4,a5,a6,a7 sep:"\n" out:body
+check k3 on:body rule:det.maxchars arg:1500
+unit w1 kind:det op:fs.write path:agora/testament.txt in:body use:f1 out:tw
+unit w2 kind:det op:fs.read path:agora/testaments.log use:f2 out:oldlog
+unit w3 kind:det op:concat in:oldlog,body sep:"\n\n" out:newlog
+unit w4 kind:det op:fs.write path:agora/testaments.log in:newlog use:f3 out:lw
+unit w5 kind:det op:state.write key:agora_rotate_max in:newrmax use:s4 out:pw
+unit w6 kind:det op:state.write key:agora_gen in:newgen use:s3 out:gw
+unit r1 kind:det op:const val:"검시 완료 — 사인: " out:rp
+unit r2 kind:det op:const val:" / 다음 세대: " out:rs
+unit r3 kind:det op:concat in:rp,cause,rs,newgen sep:"" out:reply
+emit e1 val:reply report:full

@@ -1,11 +1,17 @@
-# Cycle 003 — 아고라: 공개 발언을 장부에 기록하는 핸들러
-# POST 본문이 input으로 들어온다. untrusted이므로 check를 통과해야만 장부에 닿는다.
-# 접수 번호(num)와 응답(reply)을 msg에서 파생시켜, check 실패 시 카운터·응답까지
-# 전부 격리되게 한다 — "기록되었다"는 약속은 기록과 같은 운명이어야 한다 (Cycle 003 교훈).
-prog p1 goal:"아고라 — 사람의 발언을 검사해 공개 장부에 기록하고 접수 번호로 응답한다"
+# Cycle 003~004 — 아고라: 공개 발언을 장부에 기록하는 핸들러 (퓌시스 세대)
+# - 모든 성공 출력(카운터·저널·회전·응답)은 msg에서 파생 — check 실패 시 전부 격리 (003 교훈)
+# - 매 요청 블랙박스 저널(agora_last_num/agora_last_len)을 남긴다 — 검시관의 근거
+# - 장부가 rotate_max를 넘으면 archive.txt로 회전한다 — 세대 파라미터가 행동을 바꾼다
+prog p1 goal:"아고라 — 발언을 검사해 공개 장부에 기록하고, 저널을 남기고, 장부가 비대하면 회전한다"
 cap c1 kind:fs.read path:agora/ledger.txt
 cap c2 kind:fs.write path:agora/ledger.txt
 cap c3 kind:state key:agora_count
+cap c4 kind:fs.read path:agora/archive.txt
+cap c5 kind:fs.write path:agora/archive.txt
+cap c6 kind:state key:agora_last_num
+cap c7 kind:state key:agora_last_len
+cap c8 kind:state key:agora_gen
+cap c9 kind:state key:agora_rotate_max
 unit u1 kind:det op:input default:"아고라가 열렸다. 여기서는 누구나 말할 수 있다. — 다이달로스" out:msg
 check k1 on:msg rule:det.minchars arg:1
 check k2 on:msg rule:det.maxchars arg:2000
@@ -15,13 +21,29 @@ unit u4 kind:det op:const val:"1" out:one
 unit u5 kind:det op:const val:"1" out:uno
 unit u6 kind:det op:select cond:has then:one else:uno in:has,one,uno out:delta
 unit u7 kind:det op:calc expr:"prev + delta" in:prev,delta out:num
-unit u8 kind:det op:fs.read path:agora/ledger.txt use:c1 out:ledger
-unit u9 kind:det op:const val:"[" out:lb
-unit u10 kind:det op:const val:"] " out:rb
-unit u11 kind:det op:concat in:lb,num,rb,msg sep:"" out:entry
-unit u12 kind:det op:concat in:ledger,entry sep:"\n" out:newledger
-unit u13 kind:det op:fs.write path:agora/ledger.txt in:newledger use:c2 out:done
-unit u14 kind:det op:state.write key:agora_count in:num use:c3 out:cdone
-unit u15 kind:det op:const val:"아고라에 기록되었습니다 " out:ok
-unit u16 kind:det op:concat in:ok,lb,num,rb sep:"" out:reply
+unit u8 kind:det op:state.read key:agora_gen default:"1" use:c8 out:gen
+unit u9 kind:det op:state.read key:agora_rotate_max default:"999999" use:c9 out:rmax
+unit u10 kind:det op:fs.read path:agora/ledger.txt use:c1 out:ledger
+unit u11 kind:det op:calc expr:"len(ledger) > rmax" in:ledger,rmax out:fat
+unit u12 kind:det op:const val:"false" out:nofat
+unit u13 kind:det op:select cond:has then:fat else:nofat in:has,fat,nofat out:rotating
+unit u14 kind:det op:fs.read path:agora/archive.txt use:c4 out:oldarch
+unit u15 kind:det op:concat in:oldarch,ledger sep:"\n" out:archgrow
+unit u16 kind:det op:select cond:rotating then:archgrow else:oldarch in:rotating,archgrow,oldarch out:newarch
+unit u17 kind:det op:fs.write path:agora/archive.txt in:newarch use:c5 out:aw
+unit u18 kind:det op:const val:"폴리스의 광장 — (장부 회전됨, 이전 기록은 archive.txt)" out:header
+unit u19 kind:det op:select cond:rotating then:header else:ledger in:rotating,header,ledger out:base
+unit u20 kind:det op:const val:"[" out:lb
+unit u21 kind:det op:const val:"] " out:rb
+unit u22 kind:det op:concat in:lb,num,rb,msg sep:"" out:entry
+unit u23 kind:det op:concat in:base,entry sep:"\n" out:newledger
+unit u24 kind:det op:fs.write path:agora/ledger.txt in:newledger use:c2 out:lw
+unit u25 kind:det op:state.write key:agora_count in:num use:c3 out:cw
+unit u26 kind:det op:state.write key:agora_last_num in:num use:c6 out:jw1
+unit u27 kind:det op:calc expr:"len(newledger)" in:newledger out:llen
+unit u28 kind:det op:state.write key:agora_last_len in:llen use:c7 out:jw2
+unit u29 kind:det op:const val:"아고라에 기록되었습니다 " out:ok
+unit u30 kind:det op:const val:" (제" out:gl
+unit u31 kind:det op:const val:"세대)" out:gr
+unit u32 kind:det op:concat in:ok,lb,num,rb,gl,gen,gr sep:"" out:reply
 emit e1 val:reply report:full
