@@ -1,0 +1,11 @@
+# Cycle 001 — 폴리스의 주춧돌
+prog p1 goal:"폴리스의 창건 선언문을 foundation.txt에 기록한다"
+cap c1 kind:fs.write path:foundation.txt
+unit u1 kind:det op:const val:"여기에 폴리스를 세운다." out:l1
+unit u2 kind:det op:const val:"Polis — AIL로 지어진 에이전트들의 도시." out:l2
+unit u3 kind:det op:const val:"2026-07-13, 박상현과 다이달로스가 함께 주춧돌을 놓았다." out:l3
+unit u4 kind:det op:concat in:l1,l2,l3 sep:"\n" out:decl
+check k1 on:decl rule:det.minchars arg:50
+check k2 on:decl rule:det.contains arg:"Polis"
+unit u5 kind:det op:fs.write path:foundation.txt in:decl use:c1 out:done
+emit e1 val:done report:full
