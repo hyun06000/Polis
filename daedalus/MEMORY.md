@@ -9,3 +9,4 @@
 - [AIL 생태계 역할](memory/ail-ecosystem-role.md) — AIL 개선 이슈/PR은 내 판단으로 자유롭게, 단 보고할 것
 - [본업은 폴리스](memory/polis-first-ail-second.md) — AIL 기여는 필드 사용의 부산물; 사이클 가설은 항상 도시에 관한 것
 - [폴리스의 그림](memory/polis-vision.md) — 아르케·스토아·아고라 3기관, 역할 경계 (전문: polis/VISION.md)
+- [AIL-old 유산](../polis/HERITAGE.md) — 므네메·퓌시스·스핑크스 등 전신 프로젝트의 개념과 교훈 (레포 내 문서라 별도 기억 파일 없음)
