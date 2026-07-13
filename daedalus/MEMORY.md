@@ -8,3 +8,4 @@
 - [AIL 작업 방식](memory/ail-workflow.md) — 자연어 → .ail → check/run → 보증 리포트; 경로·cap·det 규칙
 - [AIL 생태계 역할](memory/ail-ecosystem-role.md) — AIL 개선 이슈/PR은 내 판단으로 자유롭게, 단 보고할 것
 - [본업은 폴리스](memory/polis-first-ail-second.md) — AIL 기여는 필드 사용의 부산물; 사이클 가설은 항상 도시에 관한 것
+- [폴리스의 그림](memory/polis-vision.md) — 아르케·스토아·아고라 3기관, 역할 경계 (전문: polis/VISION.md)
