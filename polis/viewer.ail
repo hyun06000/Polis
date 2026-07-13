@@ -1,0 +1,12 @@
+# Cycle 002 — 사람의 창: 폴리스 열람 핸들러 (텍스트 게시판)
+# 드라이버(serve.py)가 text/plain으로 응답하므로 HTML 대신 텍스트 페이지를 내보낸다.
+prog p1 goal:"폴리스의 현재 모습을 사람이 읽을 수 있는 텍스트 페이지로 내보낸다"
+cap c1 kind:fs.read path:foundation.txt
+unit u1 kind:det op:const val:"════════════════════════════════════" out:bar
+unit u2 kind:det op:const val:"  P O L I S — AIL로 지어진 에이전트들의 도시" out:title
+unit u3 kind:det op:const val:"[주춧돌]" out:h1
+unit u4 kind:det op:fs.read path:foundation.txt use:c1 out:stone
+unit u5 kind:det op:const val:"[주민] 아직 입주 전" out:h2
+unit u6 kind:det op:const val:"[광장] 아직 열리지 않음" out:h3
+unit u7 kind:det op:concat in:bar,title,bar,h1,stone,h2,h3,bar sep:"\n" out:page
+emit e1 val:page report:full
