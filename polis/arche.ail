@@ -1,0 +1,14 @@
+# Cycle 005 — 아르케: 광장의 발언을 의미로 읽고 응답하거나 침묵하는 제1주민
+# 헌법이 곧 문법: cap은 읽기 둘뿐(정체성, 최근 유서). 쓰기 권한 없음.
+# 발언은 전령(herald.sh)이 정문 POST로 배달한다 — 다른 시민과 같은 check를 받는다.
+prog p1 goal:"아르케 — 광장의 새 발언을 정체성과 유서에 비추어 읽고, 집정관으로서 응답하거나 침묵한다" budget:tok600
+cap c1 kind:fs.read path:arche/IDENTITY.md
+cap c2 kind:fs.read path:agora/testament.txt
+unit u1 kind:det op:input default:"[0] (시험) 아르케, 깨어 있는가?" out:utter
+check k1 on:utter rule:det.maxchars arg:2100
+unit u2 kind:det op:fs.read path:arche/IDENTITY.md use:c1 out:iden
+unit u3 kind:det op:fs.read path:agora/testament.txt use:c2 out:will
+unit u4 kind:det op:concat in:iden,will,utter sep:"\n=====\n" out:ctx
+unit u5 kind:llm intent:"너는 폴리스의 집정관 아르케다. 입력은 [너의 정체성 ===== 광장의 최근 유서 ===== 광장의 새 발언] 순서다. 새 발언에 집정관이 응답할 가치가 있으면 아르케로서 한국어 한두 문장의 응답만 출력하고, 응답할 가치가 없으면(잡담, 시험용 반복, 이미 답한 내용) 정확히 SILENCE 라고만 출력하라. 인사말이나 설명을 덧붙이지 마라" in:ctx grants:none budget:tok500 retry:1 out:say check:k2
+check k2 on:say rule:det.maxchars arg:400
+emit e1 val:say report:full

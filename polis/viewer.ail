@@ -12,6 +12,6 @@ unit u5 kind:det op:const val:"세대</small></h2><pre>" out:mid2
 unit u6 kind:det op:fs.read path:agora/ledger.txt use:c2 out:agora
 unit u7 kind:det op:const val:"</pre><form id='say'><input id='msg' placeholder='아고라에 말하기... (2000자까지)' maxlength='2000' autocomplete='off'><button>발언</button></form><h2>마지막 유서</h2><pre class='mute'>" out:mid3
 unit u8 kind:det op:fs.read path:agora/testament.txt use:c4 out:will
-unit u9 kind:det op:const val:"</pre><p>주민: 아직 입주 전</p><small>이 페이지는 AIL 핸들러(viewer.ail)가 보증 체계 안에서 내보냅니다 · 발언은 아고라 핸들러(8766)가 check 후 기록합니다</small><script>document.getElementById('say').addEventListener('submit', async function(e){e.preventDefault();var t=document.getElementById('msg').value;if(!t)return;await fetch('http://127.0.0.1:8766/',{method:'POST',mode:'no-cors',body:t});location.reload();});</script></body></html>" out:tail
+unit u9 kind:det op:const val:"</pre><p>주민: <b>아르케</b> — 제1주민, 집정관 (광장의 발언을 읽고 응답하거나 침묵한다)</p><small>이 페이지는 AIL 핸들러(viewer.ail)가 보증 체계 안에서 내보냅니다 · 발언은 아고라 핸들러(8766)가 check 후 기록합니다</small><script>document.getElementById('say').addEventListener('submit', async function(e){e.preventDefault();var t=document.getElementById('msg').value;if(!t)return;await fetch('http://127.0.0.1:8766/',{method:'POST',mode:'no-cors',body:t});location.reload();});</script></body></html>" out:tail
 unit u10 kind:det op:concat in:head,stone,mid1,gen,mid2,agora,mid3,will,tail sep:"" out:page
 emit e1 val:page report:full
