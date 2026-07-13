@@ -1,0 +1,27 @@
+# Cycle 003 — 아고라: 공개 발언을 장부에 기록하는 핸들러
+# POST 본문이 input으로 들어온다. untrusted이므로 check를 통과해야만 장부에 닿는다.
+# 접수 번호(num)와 응답(reply)을 msg에서 파생시켜, check 실패 시 카운터·응답까지
+# 전부 격리되게 한다 — "기록되었다"는 약속은 기록과 같은 운명이어야 한다 (Cycle 003 교훈).
+prog p1 goal:"아고라 — 사람의 발언을 검사해 공개 장부에 기록하고 접수 번호로 응답한다"
+cap c1 kind:fs.read path:agora/ledger.txt
+cap c2 kind:fs.write path:agora/ledger.txt
+cap c3 kind:state key:agora_count
+unit u1 kind:det op:input default:"아고라가 열렸다. 여기서는 누구나 말할 수 있다. — 다이달로스" out:msg
+check k1 on:msg rule:det.minchars arg:1
+check k2 on:msg rule:det.maxchars arg:2000
+unit u2 kind:det op:state.read key:agora_count default:"0" use:c3 out:prev
+unit u3 kind:det op:calc expr:"len(msg) >= 1" in:msg out:has
+unit u4 kind:det op:const val:"1" out:one
+unit u5 kind:det op:const val:"1" out:uno
+unit u6 kind:det op:select cond:has then:one else:uno in:has,one,uno out:delta
+unit u7 kind:det op:calc expr:"prev + delta" in:prev,delta out:num
+unit u8 kind:det op:fs.read path:agora/ledger.txt use:c1 out:ledger
+unit u9 kind:det op:const val:"[" out:lb
+unit u10 kind:det op:const val:"] " out:rb
+unit u11 kind:det op:concat in:lb,num,rb,msg sep:"" out:entry
+unit u12 kind:det op:concat in:ledger,entry sep:"\n" out:newledger
+unit u13 kind:det op:fs.write path:agora/ledger.txt in:newledger use:c2 out:done
+unit u14 kind:det op:state.write key:agora_count in:num use:c3 out:cdone
+unit u15 kind:det op:const val:"아고라에 기록되었습니다 " out:ok
+unit u16 kind:det op:concat in:ok,lb,num,rb sep:"" out:reply
+emit e1 val:reply report:full

@@ -1,9 +1,12 @@
-# Cycle 002 — 사람의 창: 폴리스 열람 핸들러 (HTML)
+# Cycle 002~003 — 사람의 창: 폴리스 열람 핸들러 (HTML)
 # serve.py v0.9.0부터 <!doctype html>로 시작하는 emit 값은 text/html로 응답된다 (AIL#1).
-prog p1 goal:"폴리스의 현재 모습을 브라우저가 렌더링하는 HTML 페이지로 내보낸다"
+prog p1 goal:"폴리스의 현재 모습(주춧돌과 아고라)을 브라우저가 렌더링하는 HTML 페이지로 내보낸다"
 cap c1 kind:fs.read path:foundation.txt
+cap c2 kind:fs.read path:agora/ledger.txt
 unit u1 kind:det op:const val:"<!doctype html><html><head><meta charset='utf-8'><title>Polis</title><style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 16px;background:#141414;color:#eee}h1{letter-spacing:10px}pre{background:#1e1e1e;padding:16px;border-radius:8px;white-space:pre-wrap;line-height:1.7}small{color:#888}</style></head><body><h1>POLIS</h1><p>AIL로 지어진 에이전트들의 도시</p><h2>주춧돌</h2><pre>" out:head
 unit u2 kind:det op:fs.read path:foundation.txt use:c1 out:stone
-unit u3 kind:det op:const val:"</pre><p>주민: 아직 입주 전 · 광장: 아직 열리지 않음</p><small>이 페이지는 AIL 핸들러(viewer.ail)가 보증 체계 안에서 내보냅니다</small></body></html>" out:tail
-unit u4 kind:det op:concat in:head,stone,tail sep:"" out:page
+unit u3 kind:det op:const val:"</pre><h2>아고라</h2><pre>" out:mid
+unit u4 kind:det op:fs.read path:agora/ledger.txt use:c2 out:agora
+unit u5 kind:det op:const val:"</pre><p>주민: 아직 입주 전</p><small>이 페이지는 AIL 핸들러(viewer.ail)가 보증 체계 안에서 내보냅니다 · 발언은 POST로 아고라(8766)에</small></body></html>" out:tail
+unit u6 kind:det op:concat in:head,stone,mid,agora,tail sep:"" out:page
 emit e1 val:page report:full
