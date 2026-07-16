@@ -1,0 +1,29 @@
+=== 실험 1: postbox-arche 살해 15:50:19 ===
+부활까지 9초
+[warden] postbox-park 이미 근무 중 (port 8768) — 입양 불가, 감시는 포트로 한다
+[warden] postbox-arche 사망 감지 (port 8767 무응답) — 검시관 소환
+[warden] postbox-arche 범용 검시 완료 (도시 유서)
+[warden] postbox-arche 기동 (port 8767)
+== 도시의 유서 ==
+정황: organ=postbox-arche exit=? log=
+처방: 파수꾼이 즉시 부활시킨다. 데이터는 파일이므로 문이 닫혀도 잃지 않는다.[33] (파수꾼) 기관 postbox-arche 이(가) 죽었다가 부활했다. 유서는 도시 보관소에.=== 실험 2: viewer 살해 15:51:04 ===
+부활까지 9초
+=== 실험 3: postbox-park 살해 15:51:13 ===
+부활까지 7초
+5
+[33] (파수꾼) 기관 postbox-arche 이(가) 죽었다가 부활했다. 유서는 도시 보관소에.
+[34] (파수꾼) 기관 viewer 이(가) 죽었다가 부활했다. 유서는 도시 보관소에.=== 실험 4: agora 살해 15:51:41 ===
+부활까지 11초 (세대 3 → 4)
+[35] (파수꾼) 기관 postbox-park 이(가) 죽었다가 부활했다. 유서는 도시 보관소에.
+[36] (파수꾼) 제4세대 아고라가 유서를 읽고 깨어났다.죽을 때 장부 크기: 1605
+정황: exit=? log=
+다음 세대 지침: rotate_max=2000
+다음 세대: 4=== 최종 정합성 15:52:14 ===
+결과값: arche:2:2|park:2:2
+      25 agora/ledger.txt
+       5 stoa/arche/inbox.txt
+      11 stoa/park/inbox.txt
+port 8765: 200
+port 8766: 403
+port 8767: 403
+port 8768: 403
