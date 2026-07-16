@@ -1,0 +1,23 @@
+# gil C001 — 범용 검시관: 어느 기관이든 죽으면 유서를 남긴다 (기록만, 파라미터 유전 없음)
+# 광장은 전용 검시(necropsy.ail, 파라미터 유전 포함)를 쓴다.
+# 정황은 파수꾼이 AIL_INPUT으로 주입하는 untrusted 입력 — check를 거쳐야 유서에 닿는다.
+prog p1 goal:"범용 검시 — 죽은 기관의 정황을 검사해 도시 유서 보관소에 기록한다"
+cap f1 kind:fs.write path:city-testament.txt
+cap f2 kind:fs.read path:city-testaments.log
+cap f3 kind:fs.write path:city-testaments.log
+unit u1 kind:det op:input default:"organ=? exit=? log=(정황 없음)" out:ctx
+check k1 on:ctx rule:det.minchars arg:5
+check k2 on:ctx rule:det.maxchars arg:800
+unit u2 kind:det op:const val:"== 도시의 유서 ==" out:h
+unit u3 kind:det op:const val:"정황: " out:l1
+unit u4 kind:det op:concat in:l1,ctx sep:"" out:a1
+unit u5 kind:det op:const val:"처방: 파수꾼이 즉시 부활시킨다. 데이터는 파일이므로 문이 닫혀도 잃지 않는다." out:a2
+unit u6 kind:det op:concat in:h,a1,a2 sep:"\n" out:body
+check k3 on:body rule:det.maxchars arg:1000
+unit u7 kind:det op:fs.write path:city-testament.txt in:body use:f1 out:w1
+unit u8 kind:det op:fs.read path:city-testaments.log use:f2 out:oldlog
+unit u9 kind:det op:concat in:oldlog,body sep:"\n\n" out:newlog
+unit u10 kind:det op:fs.write path:city-testaments.log in:newlog use:f3 out:w2
+unit u11 kind:det op:const val:"검시 완료: " out:rp
+unit u12 kind:det op:concat in:rp,ctx sep:"" out:reply
+emit e1 val:reply report:full

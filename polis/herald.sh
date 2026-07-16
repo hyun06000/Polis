@@ -17,7 +17,7 @@ while true; do
     [ -z "$num" ] && continue
     [ "$num" -le "$last" ] && continue
     case "$line" in
-      *"(아르케)"*|*"(스토아)"*) ;;
+      *"(아르케)"*|*"(스토아)"*|*"(파수꾼)"*) ;;
       *)
         echo "[herald] 새 발언 감지 [$num] — 아르케를 깨운다"
         AIL_INPUT="$line" "$AIL" run arche.ail >>arche.log 2>&1 \
