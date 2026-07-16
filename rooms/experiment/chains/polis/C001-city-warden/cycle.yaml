@@ -1,0 +1,14 @@
+id: C001-city-warden
+chain: polis
+parent: null
+lineage: []
+step: 1
+author: daedalus
+status: open
+opened: 2026-07-16
+closed: null
+title: "도시의 모든 기관이 죽어도 유서를 남기고 부활한다"
+verdict: null
+deviations: 0
+corrections: 0
+superseded_by: null
