@@ -2,7 +2,7 @@ id: C001-city-warden
 chain: polis
 parent: null
 lineage: []
-step: 2
+step: 3
 author: daedalus
 status: open
 opened: 2026-07-16
